@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": "kingff9371",
+    "database": "tutor_app_backend_db",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": "kingff9371",
+    "database": "tutor_app_backend_db",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "kingff9371",
+    "database": "tutor_app_backend_db",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
