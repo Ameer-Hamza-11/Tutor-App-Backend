@@ -1,15 +1,11 @@
 const express = require('express');
-const { register, login, verifyEmail } = require('../services/user_service');
+const { register, login, verifyEmail } = require('../controllers/authController');
 const router = express.Router();
 
 
 router.route('/register').post(register)
 router.route("/login").post(login);
 router.route("/verify-otp").post(verifyEmail);
-
-
-
-
 
 
 
