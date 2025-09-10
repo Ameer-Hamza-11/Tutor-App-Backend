@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
       Users.hasMany(models.EducationDetails, { foreignKey: 'User_Id', as: 'educationdetails' })
       Users.hasMany(models.UserSubjects, { foreignKey: 'User_Id', as: 'usersubjects' })
       Users.hasMany(models.User_Languages, { foreignKey: 'User_Id', as: 'user_languages' })
+      Users.hasMany(models.Jobs, { foreignKey: 'User_Id', as: 'jobs' })
+      Users.hasMany(models.JobRequests, { foreignKey: 'Tutor_Id', as: 'jobrequests' })
+      Users.hasMany(models.TutorAssignments, { foreignKey: 'Tutor_Id', as: 'tutorAssignmentsAsTutor' })
+      Users.hasMany(models.TutorAssignments, { foreignKey: 'Student_Id', as: 'tutorAssignmentsAsStudent' })
     }
   }
 
