@@ -1,4 +1,5 @@
 const express = require("express");
+const router = express.Router();
 const {
     getRoles,
     getRoleById,
@@ -9,7 +10,6 @@ const {
 const auth_middleware = require("../middlewares/verify_token");
 const authorizeRoles = require("../middlewares/authorizeRoles");
 
-const router = express.Router();
 
 router.use(auth_middleware, authorizeRoles("Admin"));
 

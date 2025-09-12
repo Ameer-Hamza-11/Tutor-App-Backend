@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     },
     User_Id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false
     },
     Date_Of_Birth: {
