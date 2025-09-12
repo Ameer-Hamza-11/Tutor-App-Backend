@@ -5,6 +5,7 @@ const cors = require('cors')
 const db = require("./models");
 const authRoutes = require("./routes/authRoute");
 const roleRoutes = require("./routes/roleRoute");
+const jobRoutes = require("./routes/jobRoute");
 const errorMiddleware = require("./middlewares/errorMiddleware");
 
 
@@ -20,6 +21,7 @@ app.use('/uploads', express.static('uploads'))
 
 app.use("/api/auth", authRoutes);
 app.use("/api/roles", roleRoutes);
+app.use("/api/jobs", jobRoutes);
 
 
 app.use(errorMiddleware);

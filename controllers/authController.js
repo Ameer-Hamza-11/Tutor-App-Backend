@@ -1,5 +1,5 @@
 const authService = require("../services/authService");
-const AppError = require("../utils/AppError");
+// const AppError = require("../utils/AppError");
 
 const register = async (req, res, next) => {
   try {
