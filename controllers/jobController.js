@@ -20,7 +20,14 @@ const getJobById = async (req, res, next) => {
 
 const addJob = async (req, res, next) => {
   try {
-    const job = await jobService.addJob(req.body);
+    const jobData = {
+      job: req.body.job,
+      userDetails: req.body.userDetails,
+      address: req.body.address,
+      educationDetails: req.body.educationDetails,
+      profilePicture: req.file ? req.file.filename : null,
+    };
+    const job = await jobService.addJob(jobData);
     return res.status(201).json(job);
   } catch (error) {
     next(error);

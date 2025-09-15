@@ -9,12 +9,14 @@ const {
 const auth_middleware = require("../middlewares/verify_token");
 const authorizeRoles = require("../middlewares/authorizeRoles");
 
+const pictureUpload = require("../middlewares/upload").pictureUpload;
 
-router.use(auth_middleware, authorizeRoles("Admin", "Student"));
+router.use(auth_middleware);
 
-router.route("/").get(getJobs).post(addJob);
 
-router.route("/:id").get(getJobById)
+router.route("/").post(authorizeRoles("Admin", "Student"), pictureUpload.single("Profile_Picture"), addJob);
+router.route("/").get(authorizeRoles("Admin", "Teacher"), getJobs)
+router.route("/:id").get(authorizeRoles("Admin", "Teacher"), getJobById)
 
 
 module.exports = router;
