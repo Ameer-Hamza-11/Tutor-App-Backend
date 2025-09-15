@@ -1,17 +1,22 @@
-const { Jobs, Users, Subjects, Statuses, Address, UserDetails, EducationDetails, sequelize } = require("../models");
+const { Jobs, Users, Subjects, Statuses, Address, UserDetails, EducationDetails, UserSubjects, sequelize } = require("../models");
 const AppError = require("../utils/AppError");
 
 const getJobs = async () => {
     const jobs = await Jobs.findAll({
         include: [
-            { model: Users, as: "student", attributes: { exclude: ['Password', 'isVerified', 'verificationToken', 'verificationTokenExpires'] } },
+            {
+                model: Users, as: "student", attributes: { exclude: ['Password', 'isVerified', 'verificationToken', 'verificationTokenExpires'] },
+                include: [
+                    { model: UserDetails, as: "userdetails" }
+                ]
+            },
             { model: Subjects, as: "subject" },
             { model: Statuses, as: "status" },
         ]
     });
 
-if (!jobs || jobs.length === 0) throw new AppError("No jobs found", 404);
-return jobs;
+    if (!jobs || jobs.length === 0) throw new AppError("No jobs found", 404);
+    return jobs;
 };
 
 const getJobById = async (jobId) => {
@@ -31,13 +36,38 @@ const getJobById = async (jobId) => {
 
 
 const addJob = async (jobData) => {
+    // Debug log
+    console.log("📦 Raw Backend Payload:", jobData);
+
+    // Parse JSON strings coming from FormData
+    const job = typeof jobData.job === "string" ? JSON.parse(jobData.job) : jobData.job;
+    const userDetails = typeof jobData.userDetails === "string" ? JSON.parse(jobData.userDetails) : jobData.userDetails;
+    const address = typeof jobData.address === "string" ? JSON.parse(jobData.address) : jobData.address;
+
+    // EducationDetails array parse karna
+    let educationDetails = [];
+    if (jobData.educationDetails) {
+        if (Array.isArray(jobData.educationDetails)) {
+            educationDetails = jobData.educationDetails.map((e) =>
+                typeof e === "string" ? JSON.parse(e) : e
+            );
+        } else {
+            educationDetails = [JSON.parse(jobData.educationDetails)];
+        }
+    }
+
+    const profilePicture = jobData.profilePicture;
+
+    console.log("✅ Parsed job.Student_Id:", job.Student_Id);
+
     const transaction = await sequelize.transaction();
     try {
-        const { job, userDetails, address, educationDetails } = jobData;
-
-        const student = await Users.findByPk(job.Student_Id, { transaction });
+        // 👇 ab Student_Id undefined nahi hoga
+        const student = await Users.findOne({
+            where: { User_Id: job.Student_Id },
+            transaction,
+        });
         if (!student) throw new AppError("Invalid Student_Id", 400);
-
 
         const subject = await Subjects.findByPk(job.Subject_Id, { transaction });
         if (!subject) throw new AppError("Invalid Subject_Id", 400);
@@ -50,19 +80,22 @@ const addJob = async (jobData) => {
         const newJob = await Jobs.create(job, { transaction });
 
 
+
         let newAddress = null;
         if (address) {
             newAddress = await Address.create(address, { transaction });
         }
 
-        let newUserDetails = null;
-        if (userDetails) {
-            newUserDetails = await UserDetails.create(
-                { ...userDetails, Address_Id: newAddress ? newAddress.Address_Id : null },
-                { transaction }
-            );
-        }
-
+        const { Profile_Picture, ...rest } = userDetails;
+        const newUserDetails = await UserDetails.create(
+            {
+                ...rest,
+                User_Id: job.Student_Id,  // ✅ ye zaroori hai
+                Address_Id: newAddress ? newAddress.Address_Id : null,
+                Profile_Picture: profilePicture,
+            },
+            { transaction }
+        );
 
         if (educationDetails && educationDetails.length > 0) {
             for (const edu of educationDetails) {
@@ -72,6 +105,11 @@ const addJob = async (jobData) => {
                 );
             }
         }
+
+        await UserSubjects.create({
+            User_Id: newUserDetails?.User_Id || job.Student_Id,
+            Subject_Id: subject.Subject_Id
+        }, { transaction })
 
         await transaction.commit();
         return { newJob, newUserDetails, newAddress };

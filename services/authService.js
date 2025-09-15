@@ -64,7 +64,7 @@ const login = async (data) => {
         { expiresIn: "30d" }
     );
 
-    return { message: "Login successful", token, user: { id: user.User_Id, role: roleName } };
+    return { message: "Login successful", token, user: { User_Id: user.User_Id, role: roleName } };
 };
 
 const verifyEmail = async (data) => {
