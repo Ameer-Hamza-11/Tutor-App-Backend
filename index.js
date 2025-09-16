@@ -6,6 +6,9 @@ const db = require("./models");
 const authRoutes = require("./routes/authRoute");
 const roleRoutes = require("./routes/roleRoute");
 const jobRoutes = require("./routes/jobRoute");
+const jobRequestRoutes = require("./routes/jobrequestRoute");
+const demoScheduleRoutes = require("./routes/demoScheduleRoutes");
+const tutorassignmentRoutes = require("./routes/tutorAssignmentRoutes");
 const fetchRoutes = require("./routes/fetchRoute");
 const errorMiddleware = require("./middlewares/errorMiddleware");
 
@@ -23,6 +26,9 @@ app.use('/uploads', express.static('uploads'))
 app.use("/api/auth", authRoutes);
 app.use("/api/roles", roleRoutes);
 app.use("/api/jobs", jobRoutes);
+app.use("/api/jobrequests", jobRequestRoutes);
+app.use("/api/demoschedules", demoScheduleRoutes);
+app.use("/api/tutorassignments", tutorassignmentRoutes);
 app.use("/api/fetchData", fetchRoutes);
 
 

@@ -3,6 +3,7 @@ const router = express.Router();
 const {
     getJobs,
     getJobById,
+    getProfileByUserId,
     addJob
 } = require("../controllers/jobController");
 
@@ -13,10 +14,22 @@ const pictureUpload = require("../middlewares/upload").pictureUpload;
 
 router.use(auth_middleware);
 
+router.route("/")
+    .post(authorizeRoles("Student", "Admin"), pictureUpload.single("Profile_Picture"), addJob)
+    .get(authorizeRoles("Teacher", "Admin"), getJobs);
 
-router.route("/").post(authorizeRoles("Admin", "Student"), pictureUpload.single("Profile_Picture"), addJob);
-router.route("/").get(authorizeRoles("Admin", "Teacher"), getJobs)
-router.route("/:id").get(authorizeRoles("Admin", "Teacher"), getJobById)
+
+router.route("/:id")
+    .get(
+        authorizeRoles("Teacher", "Admin"),
+        getJobById
+    );
+router.route("/profile/:id")
+    .get(getProfileByUserId);
+
+
+
+
 
 
 module.exports = router;
