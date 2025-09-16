@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const { Jobs, Users, Subjects, Statuses, Address, UserDetails, EducationDetails, UserSubjects, sequelize } = require("../models");
 const AppError = require("../utils/AppError");
 
@@ -22,7 +23,12 @@ const getJobs = async () => {
 const getJobById = async (jobId) => {
     const job = await Jobs.findByPk(jobId, {
         include: [
-            { model: Users, as: "student", attributes: { exclude: ['Password', 'isVerified', 'verificationToken', 'verificationTokenExpires'] } },
+            {
+                model: Users, as: "student", attributes: { exclude: ['Password', 'isVerified', 'verificationToken', 'verificationTokenExpires'] },
+                include: [
+                    { model: UserDetails, as: "userdetails" }
+                ]
+            },
             { model: Subjects, as: "subject" },
             { model: Statuses, as: "status" },
         ],
@@ -33,6 +39,51 @@ const getJobById = async (jobId) => {
 };
 
 
+const getProfileByUserId = async (userId) => {
+    try {
+      const profile = await Users.findOne({
+        where: { User_Id: userId },
+        attributes: {
+          exclude: [
+            "Password",
+            "isVerified",
+            "verificationToken",
+            "verificationTokenExpires",
+          ],
+        },
+        include: [
+          {
+            model: UserDetails,
+            as: "userdetails",
+            include: [
+              {
+                model: Address,
+                as: "address",
+                include: ["city", "country"], // Cities & Countries as per associations
+              },
+              { model: sequelize.models.Genders, as: "gender" },
+            ],
+          },
+          {
+            model: EducationDetails,
+            as: "educationdetails",
+          },
+          {
+            model: UserSubjects,
+            as: "usersubjects",
+            include: [{ model: Subjects, as: "subject" }],
+          },
+        ],
+      });
+  
+      if (!profile) throw new AppError("Profile not found", 404);
+      return profile;
+    } catch (error) {
+      console.error("🔥 getProfileByUserId error:", error);
+      throw error;
+    }
+  };
+  
 
 
 const addJob = async (jobData) => {
@@ -120,8 +171,12 @@ const addJob = async (jobData) => {
 };
 
 
+
+
+
 module.exports = {
     getJobs,
     getJobById,
+    getProfileByUserId,
     addJob,
 };

@@ -34,7 +34,7 @@ const register = async (data) => {
         return { message: "User registered. Please check your email for the OTP code." };
     } catch (error) {
         await t.rollback();
-        throw error; 
+        throw error;
     }
 };
 
@@ -64,7 +64,17 @@ const login = async (data) => {
         { expiresIn: "30d" }
     );
 
-    return { message: "Login successful", token, user: { User_Id: user.User_Id, role: roleName } };
+    return {
+        message: "Login successful", token, user: {
+            User_Id: user.User_Id,
+            User_Name: user.User_Name,
+            First_Name: user.First_Name,
+            Last_Name: user.Last_Name,
+            Email: user.Email,
+            Phone_Number: user.Phone_Number,
+            role: roleName
+        }
+    };
 };
 
 const verifyEmail = async (data) => {

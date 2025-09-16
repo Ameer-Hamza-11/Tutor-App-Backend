@@ -18,6 +18,15 @@ const getJobById = async (req, res, next) => {
   }
 };
 
+const getProfileByUserId = async (req, res, next) => {
+  try {
+    const profile = await jobService.getProfileByUserId(req.params.id);
+    return res.status(200).json(profile);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const addJob = async (req, res, next) => {
   try {
     const jobData = {
@@ -39,5 +48,6 @@ const addJob = async (req, res, next) => {
 module.exports = {
   getJobs,
   getJobById,
+  getProfileByUserId,
   addJob,
 };
