@@ -13,11 +13,22 @@ router.post(
     jobRequestController.addJobRequest
 );
 
-// ✅ Admin/Student apne job ke requests dekh sakte hain
+router.get(
+    "/",
+    authorizeRoles("Admin"),
+    jobRequestController.getAllJobRequests
+);
+
 router.get(
     "/:jobId",
-    authorizeRoles("Student", "Admin"),
+    authorizeRoles("Admin"),
     jobRequestController.getJobRequestsByJobId
+);
+
+router.delete(
+    "/:id",
+    authorizeRoles("Admin"),
+    jobRequestController.deleteJobRequest
 );
 
 module.exports = router;

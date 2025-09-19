@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 const verifyEmailTemplate = require('../templates/verifyEmailTemplate');
 
-const SendMail = async (to, name, otp) => {
+const SendMail = async ({ to, subject, html }) => {
     try {
         const transporter = nodemailer.createTransport({
             service: "Gmail",
@@ -15,8 +15,8 @@ const SendMail = async (to, name, otp) => {
         const mailOptions = {
             from: `"💖 Tutor App Team" <${process.env.EMAIL_USER}>`,
             to,
-            subject: "Verify your email with OTP",
-            html: verifyEmailTemplate(name, otp),
+            subject,
+            html
         }
 
         await transporter.sendMail(mailOptions);

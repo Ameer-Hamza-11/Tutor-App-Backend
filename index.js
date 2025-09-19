@@ -4,6 +4,7 @@ const app = express();
 const cors = require('cors')
 const db = require("./models");
 const authRoutes = require("./routes/authRoute");
+const settingRoutes = require("./routes/settingRoute");
 const roleRoutes = require("./routes/roleRoute");
 const jobRoutes = require("./routes/jobRoute");
 const jobRequestRoutes = require("./routes/jobrequestRoute");
@@ -24,6 +25,7 @@ app.use(express.json());
 app.use('/uploads', express.static('uploads'))
 
 app.use("/api/auth", authRoutes);
+app.use("/api/settings", settingRoutes);
 app.use("/api/roles", roleRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/jobrequests", jobRequestRoutes);

@@ -40,6 +40,24 @@ const fetchAllCountries = async (req, res, next) => {
         next(error);
     }
 }
+const fetchAllUsers = async (req, res, next) => {
+    try {
+        const users = await fetchService.fetchAllUsers();
+        return res.status(200).json(users);
+    } catch (error) {
+        next(error);
+    }
+}
+
+const fetchAllUserById = async (req, res, next) => {
+    try {
+        const { User_Id } = req.params;
+        const user = await fetchService.fetchAllUserById(User_Id);
+        return res.status(200).json(user);
+    } catch (error) {
+        next(error);
+    }
+}
 
 
-module.exports = { fetchAllSubjects, fetchAllGenders, fetchAllCities, fetchAllCountries };
+module.exports = { fetchAllSubjects, fetchAllGenders, fetchAllCities, fetchAllCountries, fetchAllUsers, fetchAllUserById };
