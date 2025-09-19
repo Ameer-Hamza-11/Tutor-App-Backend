@@ -1,4 +1,4 @@
-const { Subjects, Genders, Cities, Countries } = require('../models');
+const { Subjects, Genders, Cities, Countries, Users, UserRoles, UserDetails, EducationDetails, Address } = require('../models');
 const AppError = require("../utils/AppError");
 
 
@@ -34,9 +34,49 @@ const fetchAllCountries = async () => {
     return allCountries;
 }
 
+const fetchAllUsers = async () => {
+    const users = await Users.findAll({
+        include: [
+            { model: UserRoles, as: 'userroles' }
+        ],
+        attributes: { exclude: ['Password', 'verificationToken', 'verificationTokenExpires'] }
+    })
+    if (!users || users.length === 0) {
+        throw new AppError("No users found", 404);
+    }
+    return users;
+}
+
+const fetchAllUserById = async (User_Id) => {
+    const user = await Users.findByPk(User_Id, {
+        include: [
+            { model: UserRoles, as: 'userroles' },
+            {
+                model: UserDetails, as: 'userdetails',
+                include: [
+                    { model: Genders, as: 'gender' },
+                    {
+                        model: Address, as: 'address',
+                        include:
+                            [
+                                { model: Cities, as: 'city' },
+                                { model: Countries, as: 'country' }
+                            ]
+                    }
+                ]
+            },
+            { model: EducationDetails, as: 'educationdetails' },
+        ]
+    });
+    if (!user) {
+        throw new AppError("No user found with this ID", 404);
+    }
+    return user;
+}
 
 
 
-module.exports = { fetchAllSubjects, fetchAllGenders, fetchAllCities, fetchAllCountries }
+
+module.exports = { fetchAllSubjects, fetchAllGenders, fetchAllCities, fetchAllCountries, fetchAllUsers, fetchAllUserById }
 
 

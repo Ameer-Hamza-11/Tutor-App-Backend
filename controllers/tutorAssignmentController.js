@@ -1,11 +1,10 @@
 'use strict';
 const tutorAssignmentService = require('../services/tutorAssignmentService');
 
-const addAssignment = async (req, res, next) => {
+const getAllAssignments = async (req, res, next) => {
   try {
-    const data = req.body;
-    const assignment = await tutorAssignmentService.addAssignment(data);
-    res.status(201).json(assignment);
+    const assignment = await tutorAssignmentService.getAllAssignments();
+    return res.status(200).json(assignment);
   } catch (error) {
     next(error);
   }
@@ -13,15 +12,15 @@ const addAssignment = async (req, res, next) => {
 
 const getAssignmentsByJob = async (req, res, next) => {
   try {
-    const jobId = req.params.jobId;
-    const assignments = await tutorAssignmentService.getAssignmentsByJob(jobId);
-    res.status(200).json(assignments);
+    const assignmentId = req.params.assignmentId;
+    const assignments = await tutorAssignmentService.getAssignmentsByJob(assignmentId);
+    return res.status(200).json(assignments);
   } catch (error) {
     next(error);
   }
 };
 
 module.exports = {
-  addAssignment,
+  getAllAssignments,
   getAssignmentsByJob
 };
