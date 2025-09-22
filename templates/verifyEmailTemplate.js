@@ -18,21 +18,21 @@ const verifyEmailTemplate = (name, otp) => {
       }
     </style>
   </head>
-  <body style="margin:0; padding:0; background:#f3e8ff; font-family:Arial,Helvetica,sans-serif;">
+  <body style="margin:0; padding:0; background:#fff7ed; font-family:Arial,Helvetica,sans-serif;">
     
     <div style="display:none; overflow:hidden; line-height:1px; opacity:0; max-height:0; max-width:0;">
       Your Tutor App verification code is ${otp}. It expires in 10 minutes.
     </div>
 
-    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f3e8ff;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#fff7ed;">
       <tr>
         <td align="center" style="padding: 32px 12px;">
           <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" class="container" style="width:600px; background:#ffffff; border-radius:20px; box-shadow:0 10px 35px rgba(0,0,0,0.08); overflow:hidden;">
             
             <!-- HEADER -->
             <tr>
-              <td align="center" style="background:linear-gradient(90deg,#9333ea,#db2777); padding: 20px;">
-                <img src="https://dummyimage.com/160x40/ffffff/9333ea.png&text=Tutor+App" width="160" height="40" alt="Tutor App" style="display:block; border:0;">
+              <td align="center" style="background:linear-gradient(90deg,#f97316,#ef4444); padding: 20px;">
+                <img src="https://dummyimage.com/160x40/ffffff/f97316.png&text=Tutor+App" width="160" height="40" alt="Tutor App" style="display:block; border:0;">
                 <div style="font:600 13px/1.4 Arial,Helvetica,sans-serif; color:#fff; margin-top:6px; letter-spacing:1px;">
                   EMAIL VERIFICATION
                 </div>
@@ -42,7 +42,7 @@ const verifyEmailTemplate = (name, otp) => {
             <!-- GREETING -->
             <tr>
               <td class="px-24 py-32" style="padding: 32px 28px 10px 28px;">
-                <h1 class="h1" style="margin:0; font:700 26px/1.3 Arial,Helvetica,sans-serif; color:#1f2937;">
+                <h1 class="h1" style="margin:0; font:700 26px/1.3 Arial,Helvetica,sans-serif; color:#111827;">
                   Hello ${name} 👋
                 </h1>
               </td>
@@ -60,8 +60,8 @@ const verifyEmailTemplate = (name, otp) => {
             <!-- OTP BOX -->
             <tr>
               <td align="center" style="padding: 20px 28px 0 28px;">
-                <div style="display:inline-block; padding: 22px 28px; border-radius:16px; background:rgba(147,51,234,0.08); border:2px solid #9333ea; backdrop-filter: blur(6px);">
-                  <div class="otp" style="font:700 38px/1.2 'Courier New', Courier, monospace; color:#9333ea; letter-spacing:14px; text-align:center; white-space:nowrap;">
+                <div style="display:inline-block; padding: 22px 28px; border-radius:16px; background:rgba(249,115,22,0.08); border:2px solid #f97316; backdrop-filter: blur(6px);">
+                  <div class="otp" style="font:700 38px/1.2 'Courier New', Courier, monospace; color:#f97316; letter-spacing:14px; text-align:center; white-space:nowrap;">
                     ${otp}
                   </div>
                 </div>
@@ -74,7 +74,7 @@ const verifyEmailTemplate = (name, otp) => {
             <!-- BUTTON -->
             <tr>
               <td align="center" style="padding: 28px 28px 0 28px;">
-                <a href="#" style="display:inline-block; font:700 15px/1.2 Arial,Helvetica,sans-serif; color:#ffffff; text-decoration:none; background:linear-gradient(90deg,#9333ea,#db2777); padding: 15px 28px; border-radius:12px; box-shadow:0 6px 16px rgba(147,51,234,0.4); transition:all .3s;">
+                <a href="#" style="display:inline-block; font:700 15px/1.2 Arial,Helvetica,sans-serif; color:#ffffff; text-decoration:none; background:linear-gradient(90deg,#f97316,#ef4444); padding: 15px 28px; border-radius:12px; box-shadow:0 6px 16px rgba(249,115,22,0.4); transition:all .3s;">
                   Open Tutor App
                 </a>
               </td>
@@ -92,7 +92,7 @@ const verifyEmailTemplate = (name, otp) => {
             <!-- DIVIDER -->
             <tr>
               <td style="padding: 24px 28px 0 28px;">
-                <hr style="border:none; border-top:1px solid #e5e7eb; margin:0;">
+                <hr style="border:none; border-top:1px solid #fbbf24; margin:0;">
               </td>
             </tr>
 
@@ -104,7 +104,7 @@ const verifyEmailTemplate = (name, otp) => {
                 </p>
                 <p style="margin:0; font:400 13px/1.6 Arial,Helvetica,sans-serif; color:#4b5563;">
                   Didn’t request this? Ignore this email. Questions? Contact us at
-                  <a href="mailto:support@tutorapp.com" style="color:#9333ea; text-decoration:none;">support@tutorapp.com</a>.
+                  <a href="mailto:support@tutorapp.com" style="color:#f97316; text-decoration:none;">support@tutorapp.com</a>.
                 </p>
               </td>
             </tr>
