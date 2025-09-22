@@ -2,7 +2,9 @@ const jobService = require("../services/jobService");
 
 const getJobs = async (req, res, next) => {
   try {
-    const jobs = await jobService.getJobs();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 1;
+    const jobs = await jobService.getJobs(page, limit);
     return res.status(200).json(jobs);
   } catch (error) {
     next(error);

@@ -34,17 +34,32 @@ const fetchAllCountries = async () => {
     return allCountries;
 }
 
-const fetchAllUsers = async () => {
-    const users = await Users.findAll({
+const fetchAllUsers = async (page = 1, limit = 3) => {
+    const offset = (page - 1) * limit;
+    const { rows, count } = await Users.findAndCountAll({
         include: [
             { model: UserRoles, as: 'userroles' }
         ],
-        attributes: { exclude: ['Password', 'verificationToken', 'verificationTokenExpires'] }
+        attributes: { exclude: ['Password', 'verificationToken', 'verificationTokenExpires'] },
+        limit,
+        offset,
+        order: [['createdAt', 'DESC']]
     })
-    if (!users || users.length === 0) {
-        throw new AppError("No users found", 404);
+
+    if (!rows || rows.length === 0) {
+        return {
+            totalItems: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: page,
+            data: [],
+        };
     }
-    return users;
+    return {
+        totalItems: count,
+        totalPages: Math.ceil(count / limit),
+        currentPage: page,
+        data: rows,
+    };
 }
 
 const fetchAllUserById = async (User_Id) => {
@@ -66,7 +81,8 @@ const fetchAllUserById = async (User_Id) => {
                 ]
             },
             { model: EducationDetails, as: 'educationdetails' },
-        ]
+        ],
+        attributes: { exclude: ['Password', 'verificationToken', 'verificationTokenExpires'] }
     });
     if (!user) {
         throw new AppError("No user found with this ID", 404);

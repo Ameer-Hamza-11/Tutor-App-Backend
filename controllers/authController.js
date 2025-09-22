@@ -53,8 +53,26 @@ const resetPassword = async (req, res, next) => {
     return res.status(201).json(result);
   } catch (error) {
     next(error)
-
   }
 }
 
-module.exports = { register, login, verifyEmail, resendEmail, forgotPassword, resetPassword };
+const editUser = async (req, res, next) => {
+  try {
+    const result = await authService.editUser(req.body);
+    return res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
+const deleteUser = async (req, res, next) => {
+  try {
+    const result = await authService.deleteUser(req.body);
+    return res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+module.exports = { register, login, verifyEmail, resendEmail, forgotPassword, resetPassword, editUser, deleteUser };
