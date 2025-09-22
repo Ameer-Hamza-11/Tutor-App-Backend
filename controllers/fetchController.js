@@ -42,7 +42,9 @@ const fetchAllCountries = async (req, res, next) => {
 }
 const fetchAllUsers = async (req, res, next) => {
     try {
-        const users = await fetchService.fetchAllUsers();
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const users = await fetchService.fetchAllUsers(page, limit);
         return res.status(200).json(users);
     } catch (error) {
         next(error);

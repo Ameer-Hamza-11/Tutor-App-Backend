@@ -2,23 +2,39 @@ const { where } = require("sequelize");
 const { Jobs, Users, Subjects, Statuses, Address, UserDetails, EducationDetails, UserSubjects, sequelize } = require("../models");
 const AppError = require("../utils/AppError");
 
-const getJobs = async () => {
-    const jobs = await Jobs.findAll({
+const getJobs = async (page = 1, limit = 10) => {
+    const offset = (page - 1) * limit;
+    const { rows, count } = await Jobs.findAndCountAll({
         include: [
             {
-                model: Users, as: "student", attributes: { exclude: ['Password', 'isVerified', 'verificationToken', 'verificationTokenExpires'] },
-                include: [
-                    { model: UserDetails, as: "userdetails" }
-                ]
+                model: Users,
+                as: "student",
+                attributes: {
+                    exclude: [
+                        "Password",
+                        "isVerified",
+                        "verificationToken",
+                        "verificationTokenExpires",
+                    ],
+                },
+                include: [{ model: UserDetails, as: "userdetails" }],
             },
             { model: Subjects, as: "subject" },
             { model: Statuses, as: "status" },
-        ]
+        ],
+        limit,
+        offset,
+        order: [["createdAt", "DESC"]],
     });
 
-    if (!jobs || jobs.length === 0) throw new AppError("No jobs found", 404);
-    return jobs;
+    return {
+        totalItems: count,
+        totalPages: Math.ceil(count / limit),
+        currentPage: page,
+        data: rows, // agar empty hai tab bhi bhejna
+    };
 };
+
 
 const getJobById = async (jobId) => {
     const job = await Jobs.findByPk(jobId, {
@@ -41,49 +57,49 @@ const getJobById = async (jobId) => {
 
 const getProfileByUserId = async (userId) => {
     try {
-      const profile = await Users.findOne({
-        where: { User_Id: userId },
-        attributes: {
-          exclude: [
-            "Password",
-            "isVerified",
-            "verificationToken",
-            "verificationTokenExpires",
-          ],
-        },
-        include: [
-          {
-            model: UserDetails,
-            as: "userdetails",
+        const profile = await Users.findOne({
+            where: { User_Id: userId },
+            attributes: {
+                exclude: [
+                    "Password",
+                    "isVerified",
+                    "verificationToken",
+                    "verificationTokenExpires",
+                ],
+            },
             include: [
-              {
-                model: Address,
-                as: "address",
-                include: ["city", "country"], // Cities & Countries as per associations
-              },
-              { model: sequelize.models.Genders, as: "gender" },
+                {
+                    model: UserDetails,
+                    as: "userdetails",
+                    include: [
+                        {
+                            model: Address,
+                            as: "address",
+                            include: ["city", "country"], // Cities & Countries as per associations
+                        },
+                        { model: sequelize.models.Genders, as: "gender" },
+                    ],
+                },
+                {
+                    model: EducationDetails,
+                    as: "educationdetails",
+                },
+                {
+                    model: UserSubjects,
+                    as: "usersubjects",
+                    include: [{ model: Subjects, as: "subject" }],
+                },
             ],
-          },
-          {
-            model: EducationDetails,
-            as: "educationdetails",
-          },
-          {
-            model: UserSubjects,
-            as: "usersubjects",
-            include: [{ model: Subjects, as: "subject" }],
-          },
-        ],
-      });
-  
-      if (!profile) throw new AppError("Profile not found", 404);
-      return profile;
+        });
+
+        if (!profile) throw new AppError("Profile not found", 404);
+        return profile;
     } catch (error) {
-      console.error("🔥 getProfileByUserId error:", error);
-      throw error;
+        console.error("🔥 getProfileByUserId error:", error);
+        throw error;
     }
-  };
-  
+};
+
 
 
 const addJob = async (jobData) => {

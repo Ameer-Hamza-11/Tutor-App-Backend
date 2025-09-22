@@ -189,4 +189,70 @@ const resetPassword = async (data) => {
     }
 }
 
-module.exports = { register, login, verifyEmail, resendEmail, forgotPassword, resetPassword };
+const editUser = async (data) => {
+    const t = await sequelize.transaction();
+    try {
+        const { UserId, User_Name, First_Name, Last_Name, Phone_Number, Role_Id } = data;
+        if (!UserId) throw new AppError("UserId is required", 400);
+
+        const user = await Users.findByPk(UserId, { transaction: t });
+        if (!user) throw new AppError("User not found", 404);
+
+        if (User_Name) user.User_Name = User_Name;
+        if (First_Name) user.First_Name = First_Name;
+        if (Last_Name) user.Last_Name = Last_Name;
+        if (Phone_Number) user.Phone_Number = Phone_Number;
+        await user.save({ transaction: t });
+
+        // 👇 Role update kare UserRoles me
+        if (Role_Id) {
+            const userRole = await UserRoles.findOne({ where: { User_Id: UserId }, transaction: t });
+            if (userRole) {
+                await userRole.update({ Role_Id }, { transaction: t });
+            } else {
+                await UserRoles.create({ User_Id: UserId, Role_Id }, { transaction: t });
+            }
+        }
+
+        await t.commit();
+        return {
+            message: "User updated successfully",
+            user: {
+                User_Id: user.User_Id,
+                User_Name: user.User_Name,
+                First_Name: user.First_Name,
+                Last_Name: user.Last_Name,
+                Email: user.Email,
+                Phone_Number: user.Phone_Number,
+                Role_Id
+            }
+        };
+    } catch (error) {
+        await t.rollback();
+        throw error;
+    }
+};
+
+
+const deleteUser = async (data) => {
+    const t = await sequelize.transaction();
+    try {
+        const { UserId } = data;
+        if (!UserId) throw new AppError("UserId is required", 400);
+
+        const user = await Users.findByPk(UserId, { transaction: t });
+        if (!user) throw new AppError("User not found", 404);
+
+        await user.destroy({ transaction: t });
+        await t.commit();
+
+        return { message: "User deleted successfully" };
+    } catch (error) {
+        await t.rollback();
+        throw error;
+    }
+}
+
+
+
+module.exports = { register, login, verifyEmail, resendEmail, forgotPassword, resetPassword, editUser, deleteUser };
