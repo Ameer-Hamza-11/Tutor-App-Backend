@@ -64,6 +64,10 @@ module.exports = (sequelize, DataTypes) => {
       verificationTokenExpires: {
         type: DataTypes.DATE,
       },
+      FCM_Token: {
+        type: DataTypes.STRING(500),
+        allowNull: true,
+      },
     },
     {
       sequelize,

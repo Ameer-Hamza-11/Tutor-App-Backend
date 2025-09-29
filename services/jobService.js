@@ -1,6 +1,6 @@
-const { where } = require("sequelize");
-const { Jobs, Users, Subjects, Statuses, Address, UserDetails, EducationDetails, UserSubjects, sequelize } = require("../models");
+const { Jobs, Users, Subjects, Statuses, Address, UserDetails, EducationDetails, sequelize } = require("../models");
 const AppError = require("../utils/AppError");
+const { sendJobNotification } = require("./notificationService");
 
 const getJobs = async (page = 1, limit = 10) => {
     const offset = (page - 1) * limit;
@@ -31,7 +31,7 @@ const getJobs = async (page = 1, limit = 10) => {
         totalItems: count,
         totalPages: Math.ceil(count / limit),
         currentPage: page,
-        data: rows, // agar empty hai tab bhi bhejna
+        data: rows, 
     };
 };
 
@@ -75,7 +75,7 @@ const getProfileByUserId = async (userId) => {
                         {
                             model: Address,
                             as: "address",
-                            include: ["city", "country"], // Cities & Countries as per associations
+                            include: ["city", "country"], 
                         },
                         { model: sequelize.models.Genders, as: "gender" },
                     ],
@@ -83,11 +83,6 @@ const getProfileByUserId = async (userId) => {
                 {
                     model: EducationDetails,
                     as: "educationdetails",
-                },
-                {
-                    model: UserSubjects,
-                    as: "usersubjects",
-                    include: [{ model: Subjects, as: "subject" }],
                 },
             ],
         });
@@ -129,7 +124,7 @@ const addJob = async (jobData) => {
 
     const transaction = await sequelize.transaction();
     try {
-        // 👇 ab Student_Id undefined nahi hoga
+    
         const student = await Users.findOne({
             where: { User_Id: job.Student_Id },
             transaction,
@@ -157,7 +152,7 @@ const addJob = async (jobData) => {
         const newUserDetails = await UserDetails.create(
             {
                 ...rest,
-                User_Id: job.Student_Id,  // ✅ ye zaroori hai
+                User_Id: job.Student_Id,  
                 Address_Id: newAddress ? newAddress.Address_Id : null,
                 Profile_Picture: profilePicture,
             },
@@ -167,18 +162,21 @@ const addJob = async (jobData) => {
         if (educationDetails && educationDetails.length > 0) {
             for (const edu of educationDetails) {
                 await EducationDetails.create(
-                    { ...edu, User_Id: newUserDetails?.User_Id || job.Student_Id },
-                    { transaction }
+                  {
+                    ...edu,
+                    Start_Year: edu.Start_Year ? Number(edu.Start_Year) : null,
+                    End_Year: edu.End_Year ? Number(edu.End_Year) : null,
+                    User_Id: newUserDetails?.User_Id || job.Student_Id,
+                  },
+                  { transaction }
                 );
-            }
+              }
         }
 
-        await UserSubjects.create({
-            User_Id: newUserDetails?.User_Id || job.Student_Id,
-            Subject_Id: subject.Subject_Id
-        }, { transaction })
+
 
         await transaction.commit();
+        await sendJobNotification(newJob, subject);
         return { newJob, newUserDetails, newAddress };
     } catch (error) {
         await transaction.rollback();

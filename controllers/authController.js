@@ -74,5 +74,18 @@ const deleteUser = async (req, res, next) => {
   }
 }
 
+const updateFcmToken = async (req, res, next) => {
+  try {
+    const { fcmToken } = req.body;
+    if (!fcmToken) {
+      return res.status(400).json({ message: "FCM token is required" });
+    }
 
-module.exports = { register, login, verifyEmail, resendEmail, forgotPassword, resetPassword, editUser, deleteUser };
+    const result = await authService.updateFcmToken(req.user.id, fcmToken);
+    return res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { register, login, verifyEmail, resendEmail, forgotPassword, resetPassword, editUser, deleteUser,updateFcmToken };

@@ -253,6 +253,20 @@ const deleteUser = async (data) => {
     }
 }
 
+const updateFcmToken = async (userId, fcmToken) => {
+    try {
+        const user = await Users.findByPk(userId);
+        if (!user) throw new AppError("User not found", 404);
+
+        user.FCM_Token = fcmToken;
+        await user.save();
+
+        return { success: true, message: "FCM token updated successfully" };
+    } catch (error) {
+        throw error;
+    }
+};
 
 
-module.exports = { register, login, verifyEmail, resendEmail, forgotPassword, resetPassword, editUser, deleteUser };
+
+module.exports = { register, login, verifyEmail, resendEmail, forgotPassword, resetPassword, editUser, deleteUser, updateFcmToken };

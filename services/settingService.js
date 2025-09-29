@@ -1,4 +1,4 @@
-const { Users, UserDetails, Address, UserRoles, Roles } = require("../models");
+const { Users, UserDetails, Address, UserRoles, Roles, UserSubjects, Subjects } = require("../models");
 const AppError = require("../utils/AppError");
 const bcrypt = require("bcryptjs");
 
@@ -18,6 +18,8 @@ const editProfile = async (data) => {
         City_Id,
         Country_Id,
         Postal_Code,
+        Subject_Id,
+        Subject_Ids
     } = data;
 
     if (!UserId) throw new AppError("UserId is required", 400);
@@ -88,6 +90,40 @@ const editProfile = async (data) => {
             await userDetail.update({ Address_Id: address.Address_Id });
         }
     }
+    // Handle subjects - for teachers only
+    if (Subject_Id) {
+        let subject = await Subjects.findByPk(Subject_Id);
+        if (subject) {
+            await UserSubjects.create({ User_Id: UserId, Subject_Id });
+        }
+    }
+
+    // Handle multiple subjects - for teachers only
+    let subjectIds = [];
+    if (data.Subject_Ids) {
+        try {
+            // Parse JSON string if it's a string, otherwise use as array
+            subjectIds = typeof data.Subject_Ids === 'string' 
+                ? JSON.parse(data.Subject_Ids) 
+                : data.Subject_Ids;
+        } catch (error) {
+            console.error('Error parsing Subject_Ids:', error);
+        }
+    }
+
+    if (Array.isArray(subjectIds) && subjectIds.length > 0) {
+        // First, remove existing subjects for this user
+        await UserSubjects.destroy({ where: { User_Id: UserId } });
+        
+        // Then add new subjects
+        for (const subjectId of subjectIds) {
+            const subject = await Subjects.findByPk(subjectId);
+            if (subject) {
+                await UserSubjects.create({ User_Id: UserId, Subject_Id: subjectId });
+            }
+        }
+    }
+
 
     return { message: "Profile updated successfully" };
 };
