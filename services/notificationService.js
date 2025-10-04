@@ -1,7 +1,7 @@
 const admin = require("firebase-admin");
-const { Users, UserRoles, Roles, UserSubjects } = require("../models");
 const { Op } = require("sequelize");
 const serviceAccount = require("../serviceAccountKey.json");
+const { Users, UserSubjects, Subjects } = require("../models");
 
 
 if (!admin.apps.length) {
@@ -10,119 +10,89 @@ if (!admin.apps.length) {
   });
 }
 
-const sendJobNotification = async (job, subject) => {
+
+const sendJobNotification = async (job, subjectIds) => {
   try {
-    // 1) Teachers who explicitly selected the job's subject
-    const subjectTeachers = await Users.findAll({
-      include: [
-        {
-          model: UserRoles,
-          as: "userroles",
-          include: [
-            {
-              model: Roles,
-              as: "role",
-              required: true,
-              where: { Role_Name: "Teacher" },
-            },
-          ],
-        },
-        {
-          model: UserSubjects,
-          as: "usersubjects",
-          required: true,
-          where: { Subject_Id: job.Subject_Id },
-        },
-      ],
-      where: {
-        FCM_Token: { [Op.ne]: null },
-        User_Id: { [Op.ne]: job.Student_Id },
-      },
-    });
-
-    // 2) Teachers who didn't select any specific subject (treat as "All Subjects")
-    const usersHavingAnySubject = await UserSubjects.findAll({
-      attributes: ["User_Id"],
-      group: ["User_Id"],
-      raw: true,
-    });
-    const userIdsWithSubjects = new Set(usersHavingAnySubject.map((u) => u.User_Id));
-
-    const allSubjectTeachers = await Users.findAll({
-      include: [
-        {
-          model: UserRoles,
-          as: "userroles",
-          include: [
-            {
-              model: Roles,
-              as: "role",
-              required: true,
-              where: { Role_Name: "Teacher" },
-            },
-          ],
-        },
-        {
-          model: UserSubjects,
-          as: "usersubjects",
-          required: false,
-        },
-      ],
-      where: {
-        FCM_Token: { [Op.ne]: null },
-        User_Id: {
-          [Op.ne]: job.Student_Id,
-        },
-      },
-    });
-
-    const allSubjectTeachersFiltered = allSubjectTeachers.filter(
-      (t) => !userIdsWithSubjects.has(t.User_Id)
-    );
-
-    // 3) Merge and dedupe, and exclude student's device token if present
-    const recipientsById = new Map();
-    for (const t of [...subjectTeachers, ...allSubjectTeachersFiltered]) {
-      if (t.FCM_Token) {
-        recipientsById.set(t.User_Id, t.FCM_Token);
-      }
+    let ids = [];
+    if (Array.isArray(subjectIds)) {
+      ids = subjectIds;
+    } else if (typeof subjectIds === "string") {
+      ids = subjectIds.split(",").map(id => id.trim());
+    } else if (job.Subject_Id) {
+      ids = [job.Subject_Id];
     }
 
-    // fetch student token to avoid sending to same device, even if roles overlap
-    let studentToken = null;
-    try {
-      const student = await Users.findByPk(job.Student_Id);
-      studentToken = student?.FCM_Token || null;
-    } catch (_) {}
-
-    const tokens = Array.from(recipientsById.values())
-      .filter(Boolean)
-      .filter((tkn) => (studentToken ? tkn !== studentToken : true));
-
-    if (tokens.length === 0) {
-      console.log("⚠️ No teacher tokens available for this job notification.");
+    if (!ids.length) {
+      console.log("❌ No subject IDs found for job");
       return;
     }
 
-    const message = {
+    const teachers = await Users.findAll({
+      include: [
+        {
+          model: UserSubjects,
+          as: "usersubjects",
+          where: { Subject_Id: { [Op.in]: ids } }
+        }
+      ],
+      attributes: ["User_Id", "FCM_Token"]
+    });
+
+    console.log("✅ Teachers found:", teachers.length);
+
+    const tokens = teachers
+      .map(t => t.FCM_Token)
+      .filter(token => !!token);
+
+    console.log("🎯 Extracted tokens:", tokens);
+    if (!tokens.length) {
+      console.log("❌ No tokens found for teachers");
+      return;
+    } 
+
+
+
+    console.log("📨 Sending to tokens:", tokens);
+    // Subject names nikal lo
+    const subjectRecords = await Subjects.findAll({
+      where: { Subject_Id: { [Op.in]: ids } },
+      attributes: ["Subject_Name"]
+    });
+
+    const subjectNames = subjectRecords.map(s => s.Subject_Name);
+
+    const response = await admin.messaging().sendEachForMulticast({
       tokens,
       notification: {
-        title: "New Job Posted",
-        body: `A new ${subject.Subject_Name} job has been posted.`,
-      },
-      data: {
-        jobId: job.Job_Id.toString(),
-        subject: subject.Subject_Name,
-        type: "job_post",
-        studentId: job.Student_Id.toString(),
-      },
-    };
+        title: "New Job Posted!",
+        body: `A new job has been posted for subjects: ${subjectNames.join(", ")}`
+      }
+    });
 
-    const response = await admin.messaging().sendEachForMulticast(message);
-    console.log("✅ Notifications sent:", response.successCount);
-  } catch (error) {
-    console.error("❌ Error sending notification:", error);
+    response.responses.forEach(async (res, idx) => {
+      if (!res.success) {
+        const errorCode = res.error?.errorInfo?.code;
+        if (errorCode === "messaging/registration-token-not-registered") {
+          const badToken = tokens[idx];
+          console.log("🗑 Removing invalid token:", badToken);
+
+        
+          await Users.update(
+            { FCM_Token: null },
+            { where: { FCM_Token: badToken } }
+          );
+        }
+      }
+    });
+
+    console.log(`📨 Notifications sent: ${response.successCount}`);
+    console.log(`❌ Failed count: ${response.failureCount}`);
+    console.log("📋 Responses:", response.responses.map(r => r.error || "OK"));
+
+  } catch (err) {
+    console.error("🔥 sendJobNotification error:", err);
   }
 };
+
 
 module.exports = { sendJobNotification };

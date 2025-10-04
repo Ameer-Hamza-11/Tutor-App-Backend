@@ -1,8 +1,8 @@
-const { Users, UserDetails, Address, UserRoles, Roles, UserSubjects, Subjects } = require("../models");
+const { Users, UserDetails, Address, UserRoles, Roles, UserSubjects, Subjects, EducationDetails, Set_Documents } = require("../models");
 const AppError = require("../utils/AppError");
 const bcrypt = require("bcryptjs");
 
-const editProfile = async (data) => {
+const editProfile = async (data, role) => {
     const {
         UserId,
         First_Name,
@@ -19,7 +19,13 @@ const editProfile = async (data) => {
         Country_Id,
         Postal_Code,
         Subject_Id,
-        Subject_Ids
+        Subject_Ids,
+        Documents,
+        Start_Year,
+        End_Year,
+        Grade,
+        Institution,
+        Degree
     } = data;
 
     if (!UserId) throw new AppError("UserId is required", 400);
@@ -90,40 +96,62 @@ const editProfile = async (data) => {
             await userDetail.update({ Address_Id: address.Address_Id });
         }
     }
-    // Handle subjects - for teachers only
+    // Step 5: Handle subjects - only for teachers
+    let subjectIds = [];
+
+    // Merge single Subject_Id + multiple Subject_Ids
     if (Subject_Id) {
-        let subject = await Subjects.findByPk(Subject_Id);
-        if (subject) {
-            await UserSubjects.create({ User_Id: UserId, Subject_Id });
-        }
+        subjectIds.push(Subject_Id);
     }
 
-    // Handle multiple subjects - for teachers only
-    let subjectIds = [];
     if (data.Subject_Ids) {
         try {
-            // Parse JSON string if it's a string, otherwise use as array
-            subjectIds = typeof data.Subject_Ids === 'string' 
-                ? JSON.parse(data.Subject_Ids) 
-                : data.Subject_Ids;
+          let parsed;
+          if (Array.isArray(data.Subject_Ids)) {
+            parsed = data.Subject_Ids;
+          } else {
+            parsed = JSON.parse(data.Subject_Ids.replace(/'/g, '"'));
+          }
+          subjectIds = [...subjectIds, ...parsed];
         } catch (error) {
-            console.error('Error parsing Subject_Ids:', error);
+          console.error("Error parsing Subject_Ids:", error);
         }
-    }
+      }
 
-    if (Array.isArray(subjectIds) && subjectIds.length > 0) {
-        // First, remove existing subjects for this user
+
+    if (role?.toLowerCase() === "teacher" && subjectIds.length > 0) {
         await UserSubjects.destroy({ where: { User_Id: UserId } });
-        
-        // Then add new subjects
-        for (const subjectId of subjectIds) {
-            const subject = await Subjects.findByPk(subjectId);
-            if (subject) {
-                await UserSubjects.create({ User_Id: UserId, Subject_Id: subjectId });
-            }
-        }
+
+        const userSubjects = subjectIds.map((sid) => ({
+            User_Id: UserId,
+            Subject_Id: sid,
+        }));
+
+        await UserSubjects.bulkCreate(userSubjects);
     }
 
+    if (role?.toLowerCase() === "teacher") {
+
+        if (Documents && Array.isArray(Documents)) {
+            const docs = Documents.map(doc => ({
+              Document_Name: 'Education Documents',
+              Document_Path: doc,
+              Source_Id: UserId,
+              Source_Name: role
+            }));
+          
+            await Set_Documents.bulkCreate(docs);
+          }
+
+        await EducationDetails.create({
+            User_Id: UserId,
+            Degree,
+            Institution,
+            Start_Year,
+            End_Year,
+            Grade
+        })
+    }
 
     return { message: "Profile updated successfully" };
 };

@@ -2,19 +2,24 @@ const settingService = require("../services/settingService");
 
 const editProfile = async (req, res, next) => {
     try {
-        console.log("req.body ===>", req.body);
-        console.log("req.file ===>", req.file);
-        if (req.file) {
-            // yahan sirf file ka naam save hoga, pura path nahi
-            req.body.Profile_Picture = req.file.filename;
-        }
-        const result = await settingService.editProfile(req.body);
-        return res.status(200).json(result);
+      console.log("req.body ===>", req.body);
+      console.log("req.files ===>", req.files);
+  
+      if (req.files?.Profile_Picture) {
+        req.body.Profile_Picture = req.files.Profile_Picture[0].filename;
+      }
+  
+      if (req.files?.Documents) {
+        req.body.Documents = req.files.Documents.map(f => f.filename);
+      }
+  
+      const result = await settingService.editProfile(req.body, req.user.role);
+      return res.status(200).json(result);
     } catch (error) {
-        next(error);
+      next(error);
     }
-};
-
+  };
+  
 const updateRole = async (req, res, next) => {
     try {
         const result = await settingService.updateRole(req.body);

@@ -9,13 +9,13 @@ const {
 
 const auth_middleware = require("../middlewares/verify_token");
 const authorizeRoles = require("../middlewares/authorizeRoles");
+const { upload } = require("../middlewares/upload");
 
-const pictureUpload = require("../middlewares/upload").pictureUpload;
 
 router.use(auth_middleware);
 
 router.route("/")
-    .post(authorizeRoles("Student", "Admin"), pictureUpload.single("Profile_Picture"), addJob)
+    .post(authorizeRoles("Student", "Admin"), upload.fields([{ name: "Profile_Picture", maxCount: 1 }]), addJob)
     .get(authorizeRoles("Teacher", "Admin"), getJobs);
 
 

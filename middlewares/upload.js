@@ -2,27 +2,52 @@ const multer = require('multer');
 const path = require('path')
 
 
-const pictureStorage = multer.diskStorage({
+const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/picture/')
+        if (file.fieldname === "Profile_Picture") {
+            cb(null, "uploads/picture/");
+        } else if (file.fieldname === "Documents") {
+            cb(null, "uploads/document/");
+        }
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname))
+        cb(null, Date.now() + path.extname(file.originalname));
     }
-})
+});
 
 
-const pictureFileFilter = (req, file, cb) => {
-    const allowed = /jpeg|jpg|png/;
-    const ext = allowed.test(path.extname(file.originalname.toLowerCase()));
-    const mime = allowed.test(file.mimetype)
-    if (ext && mime) {
-        cb(null, true)
-    } else {
-        throw new Error("Only images are allowed");
+
+const fileFilter = (req, file, cb) => {
+    if (file.fieldname === "Profile_Picture") {
+        const allowed = /jpeg|jpg|png/;
+        const ext = allowed.test(path.extname(file.originalname.toLowerCase()));
+        const mime = allowed.test(file.mimetype)
+        if (ext && mime) {
+            cb(null, true)
+        }
+        else {
+            cb(new Error("Only images are allowed"), false);
+        }
+    }
+    else if (file.fieldname === "Documents") {
+        const allowed = /docx|pdf|html|doc/;
+        const ext = allowed.test(path.extname(file.originalname.toLowerCase()));
+        const mime = allowed.test(file.mimetype)
+        if (ext && mime) {
+            cb(null, true)
+        }
+        else {
+            cb(new Error("Only Documents are allowed"), false);
+        }
+    }
+    else {
+        throw new Error("Only Files are allowed");
     }
 }
-const pictureUpload = multer({ storage: pictureStorage, fileFilter: pictureFileFilter })
 
 
-module.exports = { pictureUpload };
+
+
+const upload = multer({ storage, fileFilter });
+
+module.exports = { upload };

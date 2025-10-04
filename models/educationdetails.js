@@ -51,6 +51,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(50),
       allowNull: true
     },
+    Document_Id: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+  }
   }, {
     sequelize,
     modelName: 'EducationDetails',
