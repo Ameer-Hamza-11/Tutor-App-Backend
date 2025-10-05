@@ -62,10 +62,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         defaultValue: 1, 
       },
-      Created_Date: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-      },
       IsDeleted: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,

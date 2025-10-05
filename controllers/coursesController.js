@@ -10,7 +10,7 @@ const createCourse = async (req, res, next) => {
             req.body.Thumbnail = req.files.Thumbnail[0].filename;
         }
 
-        const result = await coursesService.createCourse(req.body)
+        const result = await coursesService.createCourse(req.body, req.user.role, req.user.id)
         return res.status(201).json({ message: 'Course created successfully', course: result });
     } catch (error) {
         next(error)
@@ -19,7 +19,7 @@ const createCourse = async (req, res, next) => {
 
 const approveCourse = async (req, res, next) => {
     try {
-        const result = await coursesService.approveCourse(req.body)
+        const result = await coursesService.approveCourse(req.body, req.user.role, req.user.id)
         return res.status(201).json(result)
     } catch (error) {
         next(error)
@@ -29,7 +29,7 @@ const approveCourse = async (req, res, next) => {
 
 const enrollInCourses = async (req, res, next) => {
     try {
-        const result = await coursesService.enrollInCourses(req.body)
+        const result = await coursesService.enrollInCourses(req.body, req.user.role, req.user.id)
         return res.status(201).json(result)
     } catch (error) {
         next(error)

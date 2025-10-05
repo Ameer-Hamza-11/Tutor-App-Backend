@@ -138,6 +138,19 @@ const addJob = async (jobData) => {
         const status = await Statuses.findByPk(job.Status || 5, { transaction });
         if (!status) throw new AppError("Invalid Status", 400);
 
+        const existingJob = await Jobs.findOne({
+            where: {
+              Student_Id: job.Student_Id,
+              Subject_Id: job.Subject_Id
+            },
+            transaction
+          });
+          
+          if (existingJob) {
+            throw new AppError('You have already posted a job for this subject.', 400);
+          }
+          
+
 
         const newJob = await Jobs.create(job, { transaction });
 

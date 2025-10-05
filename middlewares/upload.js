@@ -9,6 +9,9 @@ const storage = multer.diskStorage({
         } else if (file.fieldname === "Documents") {
             cb(null, "uploads/document/");
         }
+        else if (file.fieldname === "Thumbnail") {
+            cb(null, "uploads/thumbnail/");
+        }
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
@@ -40,6 +43,18 @@ const fileFilter = (req, file, cb) => {
             cb(new Error("Only Documents are allowed"), false);
         }
     }
+    else if (file.fieldname === "Thumbnail") {
+        const allowed = /jpeg|jpg|png/;
+        const ext = allowed.test(path.extname(file.originalname.toLowerCase()));
+        const mime = allowed.test(file.mimetype)
+        if (ext && mime) {
+            cb(null, true)
+        }
+        else {
+            cb(new Error("Only Thumbnails are allowed"), false);
+        }
+    }
+
     else {
         throw new Error("Only Files are allowed");
     }
