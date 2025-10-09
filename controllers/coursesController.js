@@ -20,7 +20,7 @@ const createCourse = async (req, res, next) => {
 const approveCourse = async (req, res, next) => {
     try {
         const result = await coursesService.approveCourse(req.body, req.user.role, req.user.id)
-        return res.status(201).json(result)
+        return res.status(200).json(result)
     } catch (error) {
         next(error)
     }
@@ -36,4 +36,44 @@ const enrollInCourses = async (req, res, next) => {
     }
 }
 
-module.exports = { createCourse, approveCourse, enrollInCourses }
+const getAllCourses = async (req, res, next) => {
+    try {
+        const result = await coursesService.getAllCourses()
+        return res.status(200).json(result)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getCourseById = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const result = await coursesService.getCourseById(id)
+        return res.status(200).json(result)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getAllApprovedCourses = async (req, res, next) => {
+    try {
+        const result = await coursesService.getAllApprovedCourses(req.user.id)
+        return res.status(200).json(result)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getApprovedCourseById = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const result = await coursesService.getApprovedCourseById(id)
+        return res.status(200).json(result)
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+
+module.exports = { createCourse, approveCourse, enrollInCourses, getAllCourses, getCourseById, getAllApprovedCourses, getApprovedCourseById }

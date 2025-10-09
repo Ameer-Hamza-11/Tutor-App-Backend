@@ -4,7 +4,14 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Countries extends Model {
     static associate(models) {
-      Countries.hasMany(models.Address, { foreignKey: 'Country_Id', as: 'addresses' })
+      Countries.hasMany(models.Cities, {
+        foreignKey: 'Country_Id',
+        as: 'cities'
+      });
+      Countries.hasMany(models.Address, {
+        foreignKey: 'Country_Id',
+        as: 'addresses'
+      });
     }
   }
   Countries.init({

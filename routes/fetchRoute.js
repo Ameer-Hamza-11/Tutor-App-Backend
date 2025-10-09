@@ -6,7 +6,8 @@ const {
     fetchAllSubjects,
     fetchAllGenders,
     fetchAllCities,
-    fetchAllCountries
+    fetchAllCountries,
+    fetchAllLanguages
 } = require("../controllers/fetchController");
 
 const auth_middleware = require("../middlewares/verify_token");
@@ -19,11 +20,12 @@ router.use(auth_middleware);
 router.route("/users").get(authorizeRoles("Admin"), fetchAllUsers)
 router.route("/users/:User_Id").get(authorizeRoles("Admin"), fetchAllUserById)
 
-//? Student and Admin can access these routes
+
 router.route("/subjects").get(fetchAllSubjects)
 router.route("/genders").get(fetchAllGenders)
 router.route("/cities").get(fetchAllCities)
 router.route("/countries").get(fetchAllCountries)
+router.route("/languages").get(fetchAllLanguages)
 
 
 

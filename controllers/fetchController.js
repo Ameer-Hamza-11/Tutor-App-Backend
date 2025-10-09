@@ -40,6 +40,15 @@ const fetchAllCountries = async (req, res, next) => {
         next(error);
     }
 }
+
+const fetchAllLanguages = async (req, res, next) => {
+    try {
+        const allLanguages = await fetchService.fetchAllLanguages();
+        return res.status(200).json(allLanguages);
+    } catch (error) {
+        next(error);
+    }
+}
 const fetchAllUsers = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -62,4 +71,4 @@ const fetchAllUserById = async (req, res, next) => {
 }
 
 
-module.exports = { fetchAllSubjects, fetchAllGenders, fetchAllCities, fetchAllCountries, fetchAllUsers, fetchAllUserById };
+module.exports = { fetchAllSubjects, fetchAllGenders, fetchAllCities, fetchAllCountries, fetchAllLanguages, fetchAllUsers, fetchAllUserById };

@@ -1,4 +1,4 @@
-const { Subjects, Genders, Cities, Countries, Users, UserRoles, UserDetails, EducationDetails, Address } = require('../models');
+const { Subjects, Genders, Cities, Countries, Languages, Users, UserRoles, UserDetails, EducationDetails, Address } = require('../models');
 const AppError = require("../utils/AppError");
 
 
@@ -19,19 +19,32 @@ const fetchAllGenders = async () => {
 }
 
 const fetchAllCities = async () => {
-    const allCities = await Cities.findAll();
-    if (!allCities || allCities.length === 0) {
-        throw new AppError("No gender found or invalid gender", 404);
-    }
-    return allCities;
-}
+    const allCities = await Cities.findAll({
+        include: [
+            { model: Countries, as: 'country' } 
+        ]
+    });
 
+    if (!allCities || allCities.length === 0) {
+        throw new AppError("No city found or invalid city", 404);
+    }
+
+    return allCities;
+};
 const fetchAllCountries = async () => {
     const allCountries = await Countries.findAll();
     if (!allCountries || allCountries.length === 0) {
-        throw new AppError("No gender found or invalid gender", 404);
+        throw new AppError("No country found or invalid country", 404);
     }
     return allCountries;
+}
+
+const fetchAllLanguages = async () => {
+    const allLanguages = await Languages.findAll();
+    if (!allLanguages || allLanguages.length === 0) {
+        throw new AppError("No languages found or invalid languages", 404);
+    }
+    return allLanguages;
 }
 
 const fetchAllUsers = async (page = 1, limit = 3) => {
@@ -93,6 +106,6 @@ const fetchAllUserById = async (User_Id) => {
 
 
 
-module.exports = { fetchAllSubjects, fetchAllGenders, fetchAllCities, fetchAllCountries, fetchAllUsers, fetchAllUserById }
+module.exports = { fetchAllSubjects, fetchAllGenders, fetchAllCities, fetchAllCountries, fetchAllLanguages, fetchAllUsers, fetchAllUserById }
 
 

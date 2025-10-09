@@ -4,54 +4,54 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.bulkInsert("Cities", [
-      // Pakistan
-      { City_Name: "Karachi",  Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "Lahore",  Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "Islamabad",  Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "Peshawar",  Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      // Pakistan (Country_Id: 1)
+      { City_Name: "Karachi", Country_Id: 1, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "Lahore", Country_Id: 1, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "Islamabad", Country_Id: 1, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "Peshawar", Country_Id: 1, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
 
-      // India
-      { City_Name: "Mumbai", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "New Delhi", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "Bangalore", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "Chennai", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      // India (Country_Id: 2)
+      { City_Name: "Mumbai", Country_Id: 2, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "New Delhi", Country_Id: 2, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "Bangalore", Country_Id: 2, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "Chennai", Country_Id: 2, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
 
-      // USA
-      { City_Name: "New York", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "Los Angeles", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "Chicago", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "Houston", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      // USA (Country_Id: 3)
+      { City_Name: "New York", Country_Id: 3, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "Los Angeles", Country_Id: 3, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "Chicago", Country_Id: 3, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "Houston", Country_Id: 3, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
 
-      // UK
-      { City_Name: "London", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "Manchester", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "Birmingham", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      // UK (Country_Id: 4)
+      { City_Name: "London", Country_Id: 4, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "Manchester", Country_Id: 4, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "Birmingham", Country_Id: 4, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
 
-      // Canada
-      { City_Name: "Toronto", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "Vancouver", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "Montreal", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      // Canada (Country_Id: 5)
+      { City_Name: "Toronto", Country_Id: 5, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "Vancouver", Country_Id: 5, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "Montreal", Country_Id: 5, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
 
-      // Australia
-      { City_Name: "Sydney", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "Melbourne", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      // Australia (Country_Id: 6)
+      { City_Name: "Sydney", Country_Id: 6, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "Melbourne", Country_Id: 6, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
 
-      // Germany
-      { City_Name: "Berlin", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "Munich", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      // Germany (Country_Id: 7)
+      { City_Name: "Berlin", Country_Id: 7, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "Munich", Country_Id: 7, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
 
-      // UAE
-      { City_Name: "Dubai", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "Abu Dhabi", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      // UAE (Country_Id: 8)
+      { City_Name: "Dubai", Country_Id: 8, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "Abu Dhabi", Country_Id: 8, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
 
-      // Saudi Arabia
-      { City_Name: "Riyadh", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "Jeddah", Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      // Saudi Arabia (Country_Id: 9)
+      { City_Name: "Riyadh", Country_Id: 9, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "Jeddah", Country_Id: 9, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
 
-      // China
-      { City_Name: "Beijing",  Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "Shanghai",  Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
-      { City_Name: "Shenzhen",  Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      // China (Country_Id: 10)
+      { City_Name: "Beijing", Country_Id: 10, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "Shanghai", Country_Id: 10, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
+      { City_Name: "Shenzhen", Country_Id: 10, Is_Active: true, createdAt: new Date(), updatedAt: new Date() },
     ]);
   },
 
