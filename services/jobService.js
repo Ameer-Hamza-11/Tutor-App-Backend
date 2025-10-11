@@ -1,6 +1,6 @@
 const { Jobs, Users, Subjects, Statuses, Address, UserDetails, EducationDetails, sequelize } = require("../models");
 const AppError = require("../utils/AppError");
-const { sendJobNotification } = require("./notificationService");
+const { sendJobNotificationToTeacher } = require("./notificationService");
 
 const getJobs = async (page = 1, limit = 10) => {
     const offset = (page - 1) * limit;
@@ -189,7 +189,7 @@ const addJob = async (jobData) => {
 
 
         await transaction.commit();
-        await sendJobNotification(newJob, subject);
+        await sendJobNotificationToTeacher(newJob, subject);
         return { newJob, newUserDetails, newAddress };
     } catch (error) {
         await transaction.rollback();

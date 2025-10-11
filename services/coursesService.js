@@ -80,6 +80,9 @@ const approveCourse = async (data, role, userId) => {
             IsDeleted
         })
     }
+    if (IsApproved && !IsDeleted) {
+        await sendCourseNotificationToStudents(course, course.Subject_Id);
+    }
 
 
     return { message: `${course.Title} has been ${IsApproved ? 'approved' : 'disapproved'} successfully.` }
@@ -121,7 +124,7 @@ const getAllCourses = async () => {
         }
     });
     if (!courses || courses.length === 0) {
-       return [];
+        return [];
     }
     return courses
 }
@@ -144,34 +147,35 @@ const getCourseById = async (id) => {
 }
 
 const { Op } = require("sequelize");
+const { sendCourseNotificationToStudents } = require('./notificationService');
 
 const getAllApprovedCourses = async (userId) => {
 
-  const enrolledCourses = await CourseEnrollment.findAll({
-    where: { Student_Id: userId },
-    attributes: ["Course_Id"],
-  });
+    const enrolledCourses = await CourseEnrollment.findAll({
+        where: { Student_Id: userId },
+        attributes: ["Course_Id"],
+    });
 
 
-  const enrolledCourseIds = enrolledCourses.map((c) => c.Course_Id);
+    const enrolledCourseIds = enrolledCourses.map((c) => c.Course_Id);
 
 
-  const courses = await Course.findAll({
-    where: {
-      IsApproved: true,
-      IsDeleted: false,
-      Course_Id: {
-        [Op.notIn]: enrolledCourseIds, 
-      },
-    },
-  });
+    const courses = await Course.findAll({
+        where: {
+            IsApproved: true,
+            IsDeleted: false,
+            Course_Id: {
+                [Op.notIn]: enrolledCourseIds,
+            },
+        },
+    });
 
 
-  if (!courses || courses.length === 0) {
-   return [];
-  }
+    if (!courses || courses.length === 0) {
+        return [];
+    }
 
-  return courses;
+    return courses;
 };
 
 const getApprovedCourseById = async (id) => {

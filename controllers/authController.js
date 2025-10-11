@@ -81,7 +81,8 @@ const updateFcmToken = async (req, res, next) => {
       return res.status(400).json({ message: "FCM token is required" });
     }
 
-    const result = await authService.updateFcmToken(req.user.id, fcmToken);
+    const userId = req.user?.id || req.user?.User_Id; 
+    const result = await authService.updateFcmToken(userId, fcmToken);
     return res.status(200).json(result);
   } catch (error) {
     next(error);
